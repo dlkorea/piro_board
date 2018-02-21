@@ -14,7 +14,32 @@
       {{ article.content }}
     </div>
     <div class="center-align">
-      {% include 'core/article_like_button.html' %}
+      <a href="{% url 'core:like_article' article.pk %}" class="btn waves-effect waves-light article_like_button {% if liked %}liked{% endif %}">추천 <span class="article_like_count">{{ article.count_like }}</span></a>
+
+      <script>
+        $('.article_like_button').click(function(e) {
+          var self = $(this);
+          var url = self.attr('href');
+
+          $.post(url)
+            .done(function(r) {
+              if (r.liked) {
+                self.addClass('liked');
+              }
+              else {
+                self.removeClass('liked');
+              }
+              self.children('.article_like_count')
+                .html(r.like_count);
+            })
+            .fail(function() {
+              alert('오류가 발생했습니다.');
+            });
+
+          e.preventDefault();
+          return false;
+        });
+      </script>
     </div>
   </div>
 </div>

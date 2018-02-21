@@ -1,6 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
+from django.views.generic import View, DetailView
+from django.views.generic.detail import SingleObjectMixin
+from django.http import JsonResponse
 
 from .models import Category, Article
 
@@ -29,11 +33,6 @@ def list_article(request, category_pk):
         max_page = last_page
 
     page_list = [i for i in range(min_page, max_page + 1)]
-    # page_list = []
-    # for i in range(1, last_page+1):
-    #     if
-    #     page_list.append(i)
-
     ctx = {
         'category': category,
         'article_list': article_list[paginate_by * (page-1):paginate_by * page],
@@ -45,22 +44,48 @@ def list_article(request, category_pk):
     return render(request, 'core/article_list.html', ctx)
 
 
-@login_required
-def detail_article(request, category_pk, article_pk):
-    article = get_object_or_404(Article, pk=article_pk)
-    ctx = {
-        'article': article,
-        'liked': article.is_liked_by(request.user),
-    }
-    return render(request, 'core/article_detail.html', ctx)
+# @login_required
+# def detail_article(request, category_pk, article_pk):
+#     article = get_object_or_404(Article, pk=article_pk)
+#     ctx = {
+#         'article': article,
+#         'liked': article.is_liked_by(request.user),
+#     }
+#     return render(request, 'core/article_detail.html', ctx)
 
 
-@require_POST
-@login_required
-def like_article(request, pk):
-    article = get_object_or_404(Article, pk=pk)
-    ctx = {
-        'article': article,
-        'liked': article.toggle_like(request.user),
-    }
-    return render(request, 'core/article_like_button.html', ctx)
+class ArticleDetailView(LoginRequiredMixin, DetailView):
+    model = Article
+    template_name = 'core/article_detail.html'
+
+
+detail_article = ArticleDetailView.as_view()
+
+
+# @require_POST
+# @login_required
+# def like_article(request, pk):
+#     article = get_object_or_404(Article, pk=pk)
+#     ctx = {
+#         'article': article,
+#         'liked': article.toggle_like(request.user),
+#     }
+#     return render(request, 'core/article_like_button.html', ctx)
+
+
+class LikeView(LoginRequiredMixin, SingleObjectMixin, View):
+    """
+    core.models.LikeMixinModel 과 연동.
+    """
+    model = None
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        data = {
+            'liked': self.object.toggle_like(request.user),
+            'like_count': self.object.count_like(),
+        }
+        return JsonResponse(data)
+
+
+like_article = LikeView.as_view(model=Article)
