@@ -1,0 +1,19 @@
+<a href="{% url 'core:like_article' article.pk %}" class="btn waves-effect waves-light article_like_button {% if liked %}liked{% endif %}">추천 {{ article.count_like }}</a>
+
+<script>
+  $('.article_like_button').click(function(e) {
+    var self = $(this);
+    var url = self.attr('href');
+
+    $.post(url)
+      .done(function(r) {
+        self.parent().html(r);
+      })
+      .fail(function() {
+        alert('오류가 발생했습니다.');
+      });
+
+    e.preventDefault();
+    return false;
+  });
+</script>

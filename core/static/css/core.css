@@ -6,6 +6,7 @@ body {
 
 main {
     flex: 1 0 auto;
+    margin: 30px 0;
 }
 
 a.brand-logo {
@@ -14,4 +15,9 @@ a.brand-logo {
 
 .article_row .row {
     margin: 0;
+}
+
+.article_content {
+    margin: 50px 0;
+    text-align: justify;
 }

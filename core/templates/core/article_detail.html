@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <div class="article_detail">
+    <div class="article_header">
+      <h3 class="center-align">{{ article.title }}</h3>
+      <div class="right-align">
+        <div><a href="#" class="author_link">{{ article.author.username }}</a></div>
+        <div>{{ article.created_at|date:"Y. m. d h : i A" }}</div>
+      </div>
+    </div>
+    <div class="article_content">
+      {{ article.content }}
+    </div>
+    <div class="center-align">
+      {% include 'core/article_like_button.html' %}
+    </div>
+  </div>
+</div>
+{% endblock %}

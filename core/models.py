@@ -9,7 +9,31 @@ class Category(models.Model):
         return self.name
 
 
-class Article(models.Model):
+class LikeMixinModel(models.Model):
+    liker_set = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='liked_%(class)s_set',
+    )
+
+    class Meta:
+        abstract = True
+
+    def count_like(self):
+        return self.liker_set.count()
+
+    def is_liked_by(self, user):
+        return self.liker_set.filter(pk=user.pk).exists()
+
+    def toggle_like(self, user):
+        liked = self.is_liked_by(user)
+        if liked:
+            self.liker_set.remove(user)
+        else:
+            self.liker_set.add(user)
+        return not liked
+
+
+class Article(LikeMixinModel):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -29,7 +53,7 @@ class Article(models.Model):
         )
 
 
-class Comment(models.Model):
+class Comment(LikeMixinModel):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,

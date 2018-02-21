@@ -6,7 +6,7 @@
     <h3>{{ category.name }}</h3>
     <div class="collection">
       {% for article in article_list %}
-      <a href="#!" class="collection-item article_row">
+      <a href="{% url 'core:detail_article' category.pk article.pk %}" class="collection-item article_row">
         <div class="row">
           <div class="col s6">{{ article.title }}</div>
           <div class="col s2 center-align">{{ article.author.username }}</div>
