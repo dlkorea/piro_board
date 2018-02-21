@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}피로 게시판{% endblock %}</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/core.css' %}" />
+
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+  {% block extra_head %}{% endblock %}
+  {% block extra_style %}{% endblock %}
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="nav-wrapper">
+        <a href="#!" class="brand-logo">피로그래밍 게시판</a>
+        <ul class="right hide-on-med-and-down">
+          {% if request.user.is_authenticated %}
+          <li>
+            <a class="dropdown-button" href="#!" data-activates="dropdown1">{{ request.user.username }}<i class="material-icons right">arrow_drop_down</i></a>
+            <ul id="dropdown1" class="dropdown-content">
+              <li><a href="#!">로그아웃</a></li>
+            </ul>
+          </li>
+          {% else %}
+          <li><a href="#" class="dropdown-button">회원가입</a></li>
+          <li><a href="#" class="dropdown-button">로그인</a></li>
+          {% endif %}
+        </ul>
+
+        <ul id="slide-out" class="side-nav">
+          {% if request.user.is_authenticated %}
+          <li><div class="user-view">
+            <a href="#!name"><span class="white-text name">{{ request.user.username }}</span></a>
+            <a href="#!email"><span class="white-text email">{{ request.user.email }}</span></a>
+          </div></li>
+          <li><a href="#!">로그아웃</a></li>
+          {% else %}
+          <li><a href="#!">회원가입</a></li>
+          <li><a href="#!">로그인</a></li>
+          {% endif %}
+        </ul>
+        <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+        <script>
+          $(".button-collapse").sideNav();
+        </script>
+
+      </div>
+    </nav>
+  </header>
+  <main>
+    {% block main %}
+    {% endblock %}
+  </main>
+  <footer class="page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+          <h5 class="white-text">피로그래밍 게시판</h5>
+          <p class="grey-text text-lighten-4">피로그래밍 강의에 다룬 게시판입니다.</p>
+        </div>
+        <div class="col l4 offset-l2 s12">
+          <h5 class="white-text">Links</h5>
+          <ul>
+            <li><a class="grey-text text-lighten-3" href="https://github.com/dlkorea/piro/" target="_blank">piro</a></li>
+            <li><a class="grey-text text-lighten-3" href="https://github.com/dlkorea/piro_remind/" target="_blank">piro_remind</a></li>
+            <li><a class="grey-text text-lighten-3" href="https://github.com/dlkorea/piro_board/" target="_blank">piro_board</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      © 2018 Copyright All Reserved to 우철
+      <a class="grey-text text-lighten-4 right" href="https://github.com/dlkorea/" target="_blank">강사 Github</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
