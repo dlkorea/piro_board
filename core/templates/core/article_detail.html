@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="article_content">
-      {{ article.content }}
+      {{ article.content|safe }}
     </div>
     <div class="center-align">
       <a href="{% url 'core:like_article' article.pk %}" class="btn waves-effect waves-light article_like_button {% if liked %}liked{% endif %}">추천 <span class="article_like_count">{{ article.count_like }}</span></a>
@@ -41,6 +41,13 @@
         });
       </script>
     </div>
+
+    {% if request.user == article.author %}
+    <div class="right-align">
+      <a href="{% url 'core:update_article' article.category.pk article.pk %}" class="btn">수정</a>
+    </div>
+    {% endif %}
+
   </div>
 </div>
 {% endblock %}

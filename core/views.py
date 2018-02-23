@@ -1,12 +1,34 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
-from django.views.generic import View, DetailView
+from django.views.generic import (
+    View,
+    DetailView,
+    ListView,
+)
 from django.views.generic.detail import SingleObjectMixin
+from django.urls import reverse
 from django.http import JsonResponse
 
 from .models import Category, Article
+from .forms import ArticleForm
+
+
+# def list_category(request):
+#     category_list = Category.objects.all()
+#     ctx = {
+#         'category_list': category_list,
+#     }
+#     return render(request, 'core/category_list.html', ctx)
+
+
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'core/category_list.html'
+
+
+list_category = CategoryListView.as_view()
 
 
 def list_article(request, category_pk):
@@ -89,3 +111,41 @@ class LikeView(LoginRequiredMixin, SingleObjectMixin, View):
 
 
 like_article = LikeView.as_view(model=Article)
+
+
+@login_required
+def create_article(request, category_pk):
+    category = get_object_or_404(Category, pk=category_pk)
+    form = ArticleForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        article = form.save(commit=False)
+        article.category = category
+        article.author = request.user
+        article.save()
+        return redirect(reverse('core:detail_article', kwargs={
+            'category_pk': category.pk,
+            'pk': article.pk,
+        }))
+    ctx = {
+        'category': category,
+        'form': form,
+    }
+    return render(request, 'core/article_create.html', ctx)
+
+
+@login_required
+def update_article(request, category_pk, pk):
+    category = get_object_or_404(Category, pk=category_pk)
+    article = get_object_or_404(Article, pk=pk)
+    form = ArticleForm(request.POST or None, instance=article)
+    if request.method == 'POST' and form.is_valid():
+        article = form.save()
+        return redirect(reverse('core:detail_article', kwargs={
+            'category_pk': category.pk,
+            'pk': article.pk,
+        }))
+    ctx = {
+        'category': category,
+        'form': form,
+    }
+    return render(request, 'core/article_create.html', ctx)

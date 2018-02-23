@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <div class="category_list">
+    <ul>
+      {% for category in category_list %}
+      <li><a href="{% url 'core:list_article' category.pk %}">{{ category.name }}</a></li>
+      {% empty %}
+      <li>아직 카테고리가 없습니다.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
